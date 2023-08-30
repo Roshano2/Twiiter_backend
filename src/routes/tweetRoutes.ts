@@ -32,14 +32,18 @@ router.post('/', async (req,res) => {
 
 //list all tweet
 router.get('/', async (req,res) => {
-    const allTweets = await prisma.tweet.findMany();
+    const allTweets = await prisma.tweet.findMany({
+        include : {user : {select : {id : true, name : true, username:true, image: true}}},
+    });
     res.json(allTweets);
 });
 
 //get one tweet
 router.get('/:id', async (req,res) => {
     const {id} = req.params;
-    const tweet = await prisma.tweet.findUnique({where: {id: Number(id)}});
+    const tweet = await prisma.tweet.findUnique({
+        where: {id: Number(id)}, include : { user : true},
+    });
     if(!tweet) {
         res.status(404).json({
             error : "tweet not found",
@@ -49,6 +53,7 @@ router.get('/:id', async (req,res) => {
 });
 
 //update tweet
+/*
 router.put('/:id', async (req,res)=> {
     const {id} = req.params;
 
@@ -56,7 +61,7 @@ router.put('/:id', async (req,res)=> {
         error : `not implemented: ${id}`
     });
 });
-
+*/
 //delete tweet
 router.delete('/:id', async (req,res)=> {
     const {id} = req.params;
